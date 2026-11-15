@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useCurrentMark } from "../game/useMark"
 
 export type ValidRegion =
   'topleft'
