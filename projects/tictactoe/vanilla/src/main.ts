@@ -17,7 +17,7 @@ const regions = [
   'bottomright'
 ]
 
-const marks: string[] = []
+let marks: string[] = []
 const winnerSlots = [
   [0, 1, 2],
   [3, 4, 5],
@@ -48,8 +48,28 @@ regionsElements.forEach(el => {
         alert(`${currentPlayer} wins!`)
 
         // reset the game
-        continue
+        regionsElements.forEach(rel => {
+          if (rel)
+            rel.innerHTML = ''
+        })
+        marks = []
+        return
       }
+    }
+
+    // check draw
+    if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
+      console.log(marks.length)
+      console.log(marks)
+      alert('It\'s a draw!')
+
+      // reset the game
+      regionsElements.forEach(rel => {
+        if (rel)
+          rel.innerHTML = ''
+      })
+      marks = []
+      return
     }
 
     if (isMultiplayer) {
@@ -60,10 +80,43 @@ regionsElements.forEach(el => {
     } else {
       // autoplaY
       let randomIndex = Math.floor(Math.random() * 9)
+      while (marks[randomIndex])
+        randomIndex = Math.floor(Math.random() * 9)
+
       if (!marks[randomIndex]) {
         const otherElement = regionsElements[randomIndex]
-        marks[randomIndex] = otherPlayer
         otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+        marks[randomIndex] = otherPlayer
+
+        // check winner
+        for (const slot of winnerSlots) {
+          if (slot.every(s => marks[s] === otherPlayer)) {
+            alert(`${otherPlayer} wins!`)
+
+            // reset the game
+            regionsElements.forEach(rel => {
+              if (rel)
+                rel.innerHTML = ''
+            })
+            marks = []
+            return
+          }
+        }
+
+        // check draw
+        if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
+          console.log(marks)
+          console.log(marks.length)
+          alert('It\'s a draw!')
+
+          // reset the game
+          regionsElements.forEach(rel => {
+            if (rel)
+              rel.innerHTML = ''
+          })
+          marks = []
+          return
+        }
       }
     }
   })
