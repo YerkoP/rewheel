@@ -108,6 +108,19 @@ p {
   grid-row-gap: 0px;
 }
 
+.grid > div {
+  font-size: 5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.grid > div > span {
+  position: absolute;
+  top: 2rem;
+}
+
 [data-region="topleft"] {
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
