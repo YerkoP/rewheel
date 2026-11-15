@@ -28,28 +28,43 @@ const winnerSlots = [
   [0, 4, 8],
   [2, 4, 6]
 ]
+let isMultiplayer = false
 
 const regionsElements = regions.map(r => grid!.querySelector<HTMLDivElement>(`[data-region="${r}"]`))
 
 regionsElements.forEach(el => {
   el?.addEventListener('click', () => {
+    if (el.children.length !== 0)
+      return
     el.innerHTML = `<span>${currentPlayer}</span>`
 
-    // check winner
+    // mark the slot
     const i = regions.indexOf(el.dataset.region || '')
     marks[i] = currentPlayer
 
+    // check winner
     for (const slot of winnerSlots) {
       if (slot.every(s => marks[s] === currentPlayer)) {
         alert(`${currentPlayer} wins!`)
+
+        // reset the game
         continue
       }
     }
-    console.log(marks)
 
-    // switch player
-    let tmpPlayer = currentPlayer
-    currentPlayer = otherPlayer
-    otherPlayer = tmpPlayer
+    if (isMultiplayer) {
+      // switch player
+      let tmpPlayer = currentPlayer
+      currentPlayer = otherPlayer
+      otherPlayer = tmpPlayer
+    } else {
+      // autoplaY
+      let randomIndex = Math.floor(Math.random() * 9)
+      if (!marks[randomIndex]) {
+        const otherElement = regionsElements[randomIndex]
+        marks[randomIndex] = otherPlayer
+        otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+      }
+    }
   })
 })
