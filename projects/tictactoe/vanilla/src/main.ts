@@ -21,7 +21,7 @@ let marks: string[] = []
 const winnerSlots = [
   [0, 1, 2],
   [3, 4, 5],
-  [9, 7, 8],
+  [6, 7, 8],
   [0, 3, 6],
   [1, 4, 7],
   [2, 5, 8],
@@ -78,14 +78,16 @@ regionsElements.forEach(el => {
 
 function isDraw(): boolean {
   if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
-    alert('It\'s a draw!')
+    setTimeout(() => {
+      alert('It\'s a draw!')
 
-    // reset the game
-    regionsElements.forEach(rel => {
-      if (rel)
-        rel.innerHTML = ''
-    })
-    marks = []
+      // reset the game
+      regionsElements.forEach(rel => {
+        if (rel)
+          rel.innerHTML = ''
+      })
+      marks = []
+    }, 0)
     return true
   }
   return false
@@ -94,14 +96,16 @@ function isDraw(): boolean {
 function isWinner(player: string): boolean {
   for (const slot of winnerSlots) {
     if (slot.every(s => marks[s] === player)) {
-      alert(`${player} wins!`)
+      setTimeout(() => {
+        alert(`${player} wins!`)
 
-      // reset the game
-      regionsElements.forEach(rel => {
-        if (rel)
-          rel.innerHTML = ''
-      })
-      marks = []
+        // reset the game
+        regionsElements.forEach(rel => {
+          if (rel)
+            rel.innerHTML = ''
+        })
+        marks = []
+      }, 0)
       return true
     }
   }
