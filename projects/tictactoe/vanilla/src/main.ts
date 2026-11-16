@@ -36,41 +36,19 @@ regionsElements.forEach(el => {
   el?.addEventListener('click', () => {
     if (el.children.length !== 0)
       return
-    el.innerHTML = `<span>${currentPlayer}</span>`
 
     // mark the slot
+    el.innerHTML = `<span>${currentPlayer}</span>`
     const i = regions.indexOf(el.dataset.region || '')
     marks[i] = currentPlayer
 
     // check winner
-    for (const slot of winnerSlots) {
-      if (slot.every(s => marks[s] === currentPlayer)) {
-        alert(`${currentPlayer} wins!`)
-
-        // reset the game
-        regionsElements.forEach(rel => {
-          if (rel)
-            rel.innerHTML = ''
-        })
-        marks = []
-        return
-      }
-    }
+    if (isWinner(currentPlayer))
+      return
 
     // check draw
-    if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
-      console.log(marks.length)
-      console.log(marks)
-      alert('It\'s a draw!')
-
-      // reset the game
-      regionsElements.forEach(rel => {
-        if (rel)
-          rel.innerHTML = ''
-      })
-      marks = []
+    if (isDraw())
       return
-    }
 
     if (isMultiplayer) {
       // switch player
@@ -78,46 +56,54 @@ regionsElements.forEach(el => {
       currentPlayer = otherPlayer
       otherPlayer = tmpPlayer
     } else {
-      // autoplaY
+      // autoplay
       let randomIndex = Math.floor(Math.random() * 9)
       while (marks[randomIndex])
         randomIndex = Math.floor(Math.random() * 9)
 
-      if (!marks[randomIndex]) {
-        const otherElement = regionsElements[randomIndex]
-        otherElement!.innerHTML = `<span>${otherPlayer}</span>`
-        marks[randomIndex] = otherPlayer
+      const otherElement = regionsElements[randomIndex]
+      otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+      marks[randomIndex] = otherPlayer
 
-        // check winner
-        for (const slot of winnerSlots) {
-          if (slot.every(s => marks[s] === otherPlayer)) {
-            alert(`${otherPlayer} wins!`)
+      // check winner
+      if (isWinner(otherPlayer))
+        return
 
-            // reset the game
-            regionsElements.forEach(rel => {
-              if (rel)
-                rel.innerHTML = ''
-            })
-            marks = []
-            return
-          }
-        }
-
-        // check draw
-        if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
-          console.log(marks)
-          console.log(marks.length)
-          alert('It\'s a draw!')
-
-          // reset the game
-          regionsElements.forEach(rel => {
-            if (rel)
-              rel.innerHTML = ''
-          })
-          marks = []
-          return
-        }
-      }
+      // check draw
+      if (isDraw())
+        return
     }
   })
 })
+
+function isDraw(): boolean {
+  if (marks.length === 9 && Array.from(marks).every(m => m === 'x' || m === 'o')) {
+    alert('It\'s a draw!')
+
+    // reset the game
+    regionsElements.forEach(rel => {
+      if (rel)
+        rel.innerHTML = ''
+    })
+    marks = []
+    return true
+  }
+  return false
+}
+
+function isWinner(player: string): boolean {
+  for (const slot of winnerSlots) {
+    if (slot.every(s => marks[s] === player)) {
+      alert(`${player} wins!`)
+
+      // reset the game
+      regionsElements.forEach(rel => {
+        if (rel)
+          rel.innerHTML = ''
+      })
+      marks = []
+      return true
+    }
+  }
+  return false
+}
