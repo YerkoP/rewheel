@@ -17,6 +17,12 @@ const regions = [
   'bottomright'
 ]
 
+enum difficulty {
+  EASY,
+  MEDIUM,
+  HARD
+}
+
 let marks: string[] = []
 const winnerSlots = [
   [0, 1, 2],
@@ -57,13 +63,7 @@ regionsElements.forEach(el => {
       otherPlayer = tmpPlayer
     } else {
       // autoplay
-      let randomIndex = Math.floor(Math.random() * 9)
-      while (marks[randomIndex])
-        randomIndex = Math.floor(Math.random() * 9)
-
-      const otherElement = regionsElements[randomIndex]
-      otherElement!.innerHTML = `<span>${otherPlayer}</span>`
-      marks[randomIndex] = otherPlayer
+      makeCpuMove(difficulty.MEDIUM)
 
       // check winner
       if (isWinner(otherPlayer))
@@ -110,4 +110,55 @@ function isWinner(player: string): boolean {
     }
   }
   return false
+}
+
+function getClosestWinSlot(player: string): number {
+  for (const slot of winnerSlots) {
+    let playerCount = 0
+    let emptyCount = 0
+    for (const index of slot) {
+      if (marks[index] === player)
+        playerCount++
+      if (!Array.from(marks)[index])
+        emptyCount++
+    }
+    if (playerCount === 2 && emptyCount === 1)
+      return slot.find(s => marks[s] !== player) || -1
+  }
+  return -1
+}
+
+function makeCpuMove(level: difficulty): void {
+  if (level === difficulty.EASY) {
+    let randomIndex = Math.floor(Math.random() * 9)
+    while (marks[randomIndex])
+      randomIndex = Math.floor(Math.random() * 9)
+  
+    const otherElement = regionsElements[randomIndex]
+    otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+    marks[randomIndex] = otherPlayer
+  } else if (level === difficulty.MEDIUM) {
+    // check if there is any chance of winning
+    const possibleWinSlot = getClosestWinSlot(otherPlayer)
+    // check if player is about to win
+    const possibleLoseSlot = getClosestWinSlot(currentPlayer)
+    if (possibleWinSlot !== -1) {
+      const otherElement = regionsElements[possibleWinSlot]
+      otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+      marks[possibleWinSlot] = otherPlayer
+    } else if (possibleLoseSlot !== -1) {
+      const otherElement = regionsElements[possibleLoseSlot]
+      otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+      marks[possibleLoseSlot] = otherPlayer
+    } else {
+      let randomIndex = Math.floor(Math.random() * 9)
+      while (marks[randomIndex])
+        randomIndex = Math.floor(Math.random() * 9)
+    
+      const otherElement = regionsElements[randomIndex]
+      otherElement!.innerHTML = `<span>${otherPlayer}</span>`
+      marks[randomIndex] = otherPlayer
+    }
+
+  }
 }
